@@ -64,7 +64,7 @@ class Actor {
   isIntersect(actor) {
     if(this === actor) {
       return false;
-    } else if (actor.type != 'actor') {
+    } else if (actor.type() != 'actor') {
         throw new Error('Можно сравнивать только объекты класса Actor');
     }
     return ( this.top <= actor.bottom || this.bottom >= actor.top || this.right <= actor.left || this.left >= actor.right );
