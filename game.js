@@ -33,7 +33,7 @@ class Actor {
     } else {
       throw new Error('Класс Actor можно создавать только векторами типа Vector')
     }
-    this.act() = function() {};//Исправить ругается
+    this.act = function() {};
     Object.defineProperty(this, 'left', {
       get: function() {
         return this.pos.x;
