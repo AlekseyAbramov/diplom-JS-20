@@ -65,8 +65,8 @@ class Actor {
     } else if (!(actor instanceof Actor)) {
         throw new Error('Можно сравнивать только объекты класса Actor');
     }
-    //return ( !(this.top < actor.bottom || this.bottom > actor.top || this.right < actor.left || this.left > actor.right) );
-    return ( !(this.left >= actor.left + actor.size.x || actor.left >= this.left + this.size.x || this.top >= actor.top + actor.size.y || actor.top >= this.top + this.size.y) );
+    //return ( !(this.left >= actor.left + actor.size.x || actor.left >= this.left + this.size.x || this.top >= actor.top + actor.size.y || actor.top >= this.top + this.size.y) );
+    return ( !(this.left >= actor.right || actor.left >= this.right || this.top >= actor.bottom || actor.top >= this.bottom) );
   }
 }
 
@@ -108,14 +108,13 @@ class Level {
     if (!(pos instanceof Vector) || !(size instanceof Vector)) {
       throw new Error('В метод obstacleAt можно передавать только вектора типа Vector');
     }
-    let obstacleActor = new Actor(pos, size);
-    let left = this.grid.find(function(el) {
-      return el.length == this.width;
-    });
-    if(obstacleActor.top > this.grid.indexOf() ) {
+    let obstacleActor = new Actor(pos, size, undefined);
+    let border = this.grid.find(el => el.length === this.width);
+    if(obstacleActor.top < this.grid.findIndex(el => el) || obstacleActor.left < border.findIndex(el => el) || obstacleActor.right > border.reverse().findIndex(el => el)) {
       return 'wall';
-    }
-    if (this.actorAt(obstacleActor)) {
+    } else if (obstacleActor.bottom > this.grid.reverse().findIndex(el => el)) {
+      return 'lava;'
+    } else if (this.actorAt(obstacleActor) != undefined) {
       return this.grid[pos.y][pos.x];
     } else {
       return undefined;
