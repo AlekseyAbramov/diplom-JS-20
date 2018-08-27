@@ -98,11 +98,13 @@ class Level {
     }
     let obstacleActor = new Actor(pos, size, undefined);
     let border = this.grid.find(el => el.length === this.width);
-    if(obstacleActor.top < this.grid.findIndex(el => el) || obstacleActor.left < border.findIndex(el => el) || obstacleActor.right > border.reverse().findIndex(el => el)) {
+    if (obstacleActor.bottom > this.grid.length + this.grid.findIndex(el => el)) {
+      return 'lava';
+    }
+    if(obstacleActor.top < this.grid.findIndex(el => el) || obstacleActor.left < border.findIndex(el => el) || obstacleActor.right > border.length + border.findIndex(el => el)) {
       return 'wall';
-    } else if (obstacleActor.bottom > this.grid.reverse().findIndex(el => el)) {
-      return 'lava;'
-    } else if (this.actorAt(obstacleActor) != undefined) {
+    }
+    if (this.actorAt(obstacleActor) != undefined) {
       return this.grid[pos.y][pos.x];
     } else {
       return undefined;
