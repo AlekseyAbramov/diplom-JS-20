@@ -26,33 +26,24 @@ class Actor {
     this.pos = pos;
     this.size = size;
     this.speed = speed;
-    this.act = function() {};
-    Object.defineProperty(this, 'left', {
-      get: function() {
-        return this.pos.x;
-      }
-    });
-    Object.defineProperty(this, 'top', {
-      get: function() {
-        return this.pos.y;
-      }
-    });
-    Object.defineProperty(this, 'right', {
-      get: function() {
-        return this.pos.x + this.size.x;
-      }
-    });
-    Object.defineProperty(this, 'bottom', {
-      get: function() {
-        return this.pos.y + this.size.y;
-      }
-    });
-    /*Object.defineProperty(this, 'type', {
-      get: function() {return 'actor'},
-      enumerable: true,
-      configurable: true,
-      }
-    );*/
+  }
+
+  act() {}
+
+  get left() {
+    return this.pos.x;
+  }
+
+  get top() {
+    return this.pos.y;
+  }
+
+  get right() {
+    return this.pos.x + this.size.x;
+  }
+
+  get bottom() {
+    return this.pos.y + this.size.y;
   }
 
   get type() {
@@ -77,9 +68,6 @@ class Level {
       return ('type' in el);
     });
     this.player = this.actors.find(actor => actor.type === 'player');
-    /*this.player = arrActors.find(function(actor) {
-      return actor.type == 'player';
-    });*/
     this.height = this.grid.length;
     this.width = this.grid.reduce(function(memo, el) {
       if (el.length > memo) {
