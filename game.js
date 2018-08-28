@@ -112,8 +112,16 @@ class Level {
   }
 
   removeActor(actor) {
-    if () {
+    if (this.actors.findIndex(actor => actor) != -1) {
+      this.actors.splice(this.actors.findIndex(actor => actor), 1);
+    }
+  }
 
+  noMoreActors(title) {
+    if (this.actors.find(el => el.type === title)) {
+      return false;
+    } else {
+      return true;
     }
   }
 }
