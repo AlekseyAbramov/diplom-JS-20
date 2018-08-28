@@ -96,7 +96,9 @@ class Level {
     if (!(pos instanceof Vector) || !(size instanceof Vector)) {
       throw new Error('В метод obstacleAt можно передавать только вектора типа Vector');
     }
+
     let obstacleActor = new Actor(pos, size, undefined);
+
     if (obstacleActor.bottom > this.height) {
       return 'lava';
     } else if (obstacleActor.top < 0 || obstacleActor.left < 0 || obstacleActor.right > this.width) {
@@ -106,8 +108,12 @@ class Level {
       for (let i = obstacleActor.top; i < obstacleActor.bottom; i++) {
         return cross = this.grid[i].find(el => el != undefined);
       }
-      //return this.actors.find(actor => obstacleActor.isIntersect(actor));
-      //return this.grid[pos.y + size.y][pos.x + size.x];
+    }
+  }
+
+  removeActor(actor) {
+    if () {
+
     }
   }
 }
