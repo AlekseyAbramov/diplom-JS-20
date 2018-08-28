@@ -2,8 +2,8 @@
 
 class Vector {
   constructor(x = 0, y = 0) {
-    this.x = x;
-    this.y = y;
+    this.x =  Math.ceil(x);
+    this.y =  Math.ceil(y);
   }
 
   plus(vector) {
@@ -97,17 +97,17 @@ class Level {
       throw new Error('В метод obstacleAt можно передавать только вектора типа Vector');
     }
     let obstacleActor = new Actor(pos, size, undefined);
-    let border = this.grid.find(el => el.length === this.width);
-    if (obstacleActor.bottom > this.grid.length + this.grid.findIndex(el => el)) {
+    if (obstacleActor.bottom > this.height) {
       return 'lava';
-    }
-    if(obstacleActor.top < this.grid.findIndex(el => el) || obstacleActor.left < border.findIndex(el => el) || obstacleActor.right > border.length + border.findIndex(el => el)) {
+    } else if (obstacleActor.top < 0 || obstacleActor.left < 0 || obstacleActor.right > this.width) {
       return 'wall';
-    }
-    if (this.actorAt(obstacleActor) != undefined) {
-      return this.grid[pos.y][pos.x];
     } else {
-      return undefined;
+      let cross;
+      for (let i = obstacleActor.top; i < obstacleActor.bottom; i++) {
+        return cross = this.grid[i].find(el => el != undefined);
+      }
+      //return this.actors.find(actor => obstacleActor.isIntersect(actor));
+      //return this.grid[pos.y + size.y][pos.x + size.x];
     }
   }
 }
