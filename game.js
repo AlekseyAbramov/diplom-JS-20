@@ -112,8 +112,9 @@ class Level {
   }
 
   removeActor(actor) {
-    if (this.actors.findIndex(actor => actor) != -1) {
-      this.actors.splice(this.actors.findIndex(actor => actor), 1);
+    const index = this.actors.findIndex(actor => actor);
+    if (index != -1) {
+      this.actors.splice(index, 1);
     }
   }
 
@@ -122,6 +123,19 @@ class Level {
       return false;
     } else {
       return true;
+    }
+  }
+
+  playerTouched(title, actor = {}) {
+    if (this.status === null) {
+      if (title == 'lava' || title == 'fireball') {
+        this.status = 'lost';
+      } else if(title === 'coin' && actor.type === 'coin' && !this.noMoreActors(title)) {
+        this.removeActor(actor);
+        if (this.noMoreActors(title)) {
+          this.status = 'won';
+        }
+      }
     }
   }
 }
