@@ -139,3 +139,9 @@ class Level {
     }
   }
 }
+
+class LevelParser {
+  constructor(gameObjects) {
+
+  }
+}
