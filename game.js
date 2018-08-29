@@ -142,6 +142,40 @@ class Level {
 
 class LevelParser {
   constructor(gameObjects) {
+    this.gameObjects = gameObjects;
+  }
 
+  actorFromSymbol(symbol = undefined) {
+    if (symbol === undefined) {
+      return undefined;
+    }
+    return this.gameObjects[symbol];
+  }
+
+  obstacleFromSymbol(symbol) {
+    if (symbol === 'x') {
+      return 'wall';
+    } else if (symbol === '!') {
+      return "lava";
+    } else {
+      return undefined;
+    }
+  }
+
+  createGrid(plan) {
+    return plan.map(element => element.split('').map(el => this.obstacleFromSymbol(el)));
+  }
+
+  createActors(plan) {
+    let actors = [];
+    plan.forEach ((element, y) => {
+      element.split('').forEach((el, x) => {
+        let classActor = this.actorFromSymbol(el);
+        if (classActor != undefined && classActor instanceof Actor) {
+          actors.push(new classActor(new Vector(x, y)));
+        }
+      })
+    });
+    return actors;
   }
 }
