@@ -189,3 +189,30 @@ class LevelParser {
     return new Level(this.createGrid(plan), this.createActors(plan));
   }
 }
+
+class Fireball extends Actor {
+  constructor(pos = undefined, speed = undefined) {
+    super(pos, undefined, speed);
+  }
+
+  get type() {
+    return 'fireball';
+  }
+
+  getNextPosition(time = 1) {
+     return this.pos.plus(this.speed.times(time));
+  }
+
+  handleObstacle() {
+    this.speed.x = -this.speed.x;
+    this.speed.y = -this.speed.y;
+  }
+
+  act(time, level) {
+    if (level.obstacleAt(this.getNextPosition(time), this.size)) {
+      this.handleObstacle();
+    } else {
+      this.pos = this.getNextPosition(time);
+    }
+  }
+}
