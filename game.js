@@ -168,14 +168,24 @@ class LevelParser {
 
   createActors(plan) {
     let actors = [];
+    if (this.gameObjects === undefined) {
+      return actors;
+    }
     plan.forEach ((element, y) => {
       element.split('').forEach((el, x) => {
         let classActor = this.actorFromSymbol(el);
-        if (classActor != undefined && classActor instanceof Actor) {
-          actors.push(new classActor(new Vector(x, y)));
+        if (typeof classActor === 'function') {
+          let actor = new classActor(new Vector(x, y));
+          if (actor instanceof Actor) {
+            actors.push(actor);
+          }
         }
       })
     });
     return actors;
+  }
+
+  parse(plan) {
+    return new Level(this.createGrid(plan), this.createActors(plan));
   }
 }
