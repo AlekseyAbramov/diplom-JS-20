@@ -270,3 +270,48 @@ class Coin extends Actor {
     this.pos = this.getNextPosition(time);
   }
 }
+
+class Player extends Actor {
+  constructor(pos = new Vector(0, 0)) {
+    super(pos.plus(new Vector(0, -0.5)), new Vector(0.8, 1.5), new Vector(0, 0));
+  }
+
+  get type() {
+    return 'player';
+  }
+}
+
+const schemas = [
+  [
+    '         ',
+    '    =    ',
+    '         ',
+    '       o ',
+    ' @    xxx',
+    '         ',
+    'xxx      ',
+    '!!!!!!!!!'
+  ],
+  [
+    '      v  ',
+    '    v    ',
+    '  v      ',
+    '        o',
+    '        x',
+    '@   x    ',
+    'x        ',
+    '!!!!!!!!!'
+  ]
+];
+const actorDict = {
+  '@': Player,
+  'v': VerticalFireball,
+  'o': Coin,
+  '=': HorizontalFireball,
+  '|': FireRain
+
+
+};
+const parser = new LevelParser(actorDict);
+runGame(schemas, parser, DOMDisplay)
+  .then(() => console.log('Вы  выиграли приз!'));
