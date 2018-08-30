@@ -2,8 +2,8 @@
 
 class Vector {
   constructor(x = 0, y = 0) {
-    this.x =  Math.ceil(x);
-    this.y =  Math.ceil(y);
+    this.x =  x;
+    this.y =  y;
   }
 
   plus(vector) {
@@ -101,11 +101,11 @@ class Level {
 
     if (obstacleActor.bottom > this.height) {
       return 'lava';
-    } else if (obstacleActor.top < 0 || obstacleActor.left < 0 || obstacleActor.right > this.width) {
+    } else if (Math.ceil(obstacleActor.top) < 0 || Math.ceil(obstacleActor.left) < 0 || Math.ceil(obstacleActor.right) > this.width) {
       return 'wall';
     } else {
       let cross;
-      for (let i = obstacleActor.top; i < obstacleActor.bottom; i++) {
+      for (let i = Math.ceil(obstacleActor.top); i < Math.ceil(obstacleActor.bottom); i++) {
         return cross = this.grid[i].find(el => el != undefined);
       }
     }
@@ -214,5 +214,41 @@ class Fireball extends Actor {
     } else {
       this.pos = this.getNextPosition(time);
     }
+  }
+}
+
+class HorizontalFireball extends Fireball {
+  constructor(pos = undefined) {
+    super(pos, new Vector(2, 0));
+  }
+}
+
+class VerticalFireball extends Fireball {
+  constructor(pos = undefined) {
+    super(pos, new Vector(0, 2));
+  }
+}
+
+class FireRain extends Fireball {
+  constructor(pos = undefined) {
+    super(pos, new Vector(0, 3));
+    this.startPos = pos;
+  }
+
+  handleObstacle() {
+    this.pos = this.startPos;
+  }
+}
+
+class Coin extends Actor {
+  constructor(pos = new Vector(0, 0)) {
+    super(pos.plus(new Vector(0.2, 0.1)), new Vector(0.6, 0.6));
+    this.springSpeed = 8;
+    this.springDist = 0.07;
+    this.spring = Math.random() * 2 * Math.PI;
+  }
+
+  get type() {
+    return 'coin';
   }
 }
