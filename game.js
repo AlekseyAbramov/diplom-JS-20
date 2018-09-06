@@ -53,10 +53,15 @@ class Actor {
   isIntersect(actor) {
     if(this === actor) {
       return false;
+    // else можно убрать, т.к. в if return
+    // и проверки, которые бросают исключения лучше делать в начале
     } else if (!(actor instanceof Actor)) {
         throw new Error('Можно сравнивать только объекты класса Actor');
     }
     //return ( !(this.left >= actor.left + actor.size.x || actor.left >= this.left + this.size.x || this.top >= actor.top + actor.size.y || actor.top >= this.top + this.size.y) );
+    // можно внести отрицание в скобки,
+    // для этого нужно заменить операторы на противоположные (>= на <, <= на >)
+    // и || на &&
     return ( !(this.left >= actor.right || actor.left >= this.right || this.top >= actor.bottom || actor.top >= this.bottom) );
   }
 }
@@ -64,11 +69,14 @@ class Actor {
 class Level {
   constructor(arrGrid = [], arrActors = []) {
     this.grid = arrGrid;
+    // непонятно зачем этот код
     this.actors = arrActors.filter(function(el) {
       return ('type' in el);
     });
     this.player = this.actors.find(actor => actor.type === 'player');
     this.height = this.grid.length;
+    // можно написать короче, если использовать стелочную функцию
+    // и тренарный оператор сравнения
     this.width = this.grid.reduce(function(memo, el) {
       if (el.length > memo) {
         memo = el.length;
@@ -80,6 +88,7 @@ class Level {
   }
 
   isFinished() {
+    // скобки можно убрать
     return (this.status != null && this.finishDelay < 0)
   }
 
@@ -87,6 +96,7 @@ class Level {
     if (!(actor instanceof Actor)) {
       throw new Error('Можно сравнивать только объекты класса Actor');
     }
+    // со стрелочной функцией будет короче
     return this.actors.find(function(el) {
       return el.isIntersect(actor);
     });
@@ -97,8 +107,15 @@ class Level {
       throw new Error('В метод obstacleAt можно передавать только вектора типа Vector');
     }
 
+    // здесь можно обойтись без создания объекта
+    // ведь он используется только для того,
+    // чтобы сложить несколько чисел
     let obstacleActor = new Actor(pos, size, undefined);
 
+    // тут какая-то проблема с логикой (возможно поэтому игра не работает)
+    // алгоритм должен быть следующий:
+    // найти клетки на которых находится объект
+    // и проверить есть ли среди них клетки с препятствиями
     if (obstacleActor.bottom > this.height) {
       return 'lava';
     } else if (Math.ceil(obstacleActor.top) < 0 || Math.ceil(obstacleActor.left) < 0 || Math.ceil(obstacleActor.right) > this.width) {
@@ -113,12 +130,16 @@ class Level {
 
   removeActor(actor) {
     const index = this.actors.findIndex(actor => actor);
+    // лучше всегда использовать === и !==
     if (index != -1) {
       this.actors.splice(index, 1);
     }
   }
 
   noMoreActors(title) {
+    // тут лучше использовать метод массива,
+    // который проверяет есть ли в нём элеметны
+    // удовлетворяющие условию
     if (this.actors.find(el => el.type === title)) {
       return false;
     } else {
@@ -127,6 +148,8 @@ class Level {
   }
 
   playerTouched(title, actor = {}) {
+    // тут можно написать if (this.status !== null) { return; }
+    // это уменьшит вложенность
     if (this.status === null) {
       if (title == 'lava' || title == 'fireball') {
         this.status = 'lost';
@@ -141,11 +164,14 @@ class Level {
 }
 
 class LevelParser {
+  // здесь можно задать значение по-умолчанию
   constructor(gameObjects) {
     this.gameObjects = gameObjects;
   }
 
+  // лишнее значение по-умолчанию
   actorFromSymbol(symbol = undefined) {
+    // лишняя проверка
     if (symbol === undefined) {
       return undefined;
     }
@@ -158,6 +184,8 @@ class LevelParser {
     } else if (symbol === '!') {
       return "lava";
     } else {
+      // лишняя строчка
+      // функция и так вернёт undefined, если не указано иное
       return undefined;
     }
   }
@@ -167,14 +195,22 @@ class LevelParser {
   }
 
   createActors(plan) {
+    // если значение присваивается переменной 1 раз,
+    // то лучше использовать const
     let actors = [];
+    // если добавить в конструкторе значение по-умолчанию,
+    // то эту проверку можно будет убрать
     if (this.gameObjects === undefined) {
       return actors;
     }
     plan.forEach ((element, y) => {
       element.split('').forEach((el, x) => {
+        // если значение присваивается переменной 1 раз,
+        // то лучше использовать const
         let classActor = this.actorFromSymbol(el);
         if (typeof classActor === 'function') {
+          // если значение присваивается переменной 1 раз,
+          // то лучше использовать const
           let actor = new classActor(new Vector(x, y));
           if (actor instanceof Actor) {
             actors.push(actor);
@@ -204,6 +240,8 @@ class Fireball extends Actor {
   }
 
   handleObstacle() {
+    // мутация объекта Vector может привести к сложно находимым ошибкам
+    // тут лушче использовать метод класса Vector
     this.speed.x = -this.speed.x;
     this.speed.y = -this.speed.y;
   }
