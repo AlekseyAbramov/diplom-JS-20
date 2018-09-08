@@ -51,18 +51,19 @@ class Actor {
   }
 
   isIntersect(actor) {
+    if (!(actor instanceof Actor)) {
+        throw new Error('Можно сравнивать только объекты класса Actor');
+    }
     if(this === actor) {
       return false;
     // else можно убрать, т.к. в if return
-    // и проверки, которые бросают исключения лучше делать в начале
-    } else if (!(actor instanceof Actor)) {
-        throw new Error('Можно сравнивать только объекты класса Actor');
+    // и проверки, которые бросают исключения лучше делать в начале. OK
     }
     //return ( !(this.left >= actor.left + actor.size.x || actor.left >= this.left + this.size.x || this.top >= actor.top + actor.size.y || actor.top >= this.top + this.size.y) );
     // можно внести отрицание в скобки,
     // для этого нужно заменить операторы на противоположные (>= на <, <= на >)
-    // и || на &&
-    return ( !(this.left >= actor.right || actor.left >= this.right || this.top >= actor.bottom || actor.top >= this.bottom) );
+    // и || на &&. OK
+    return (this.left < actor.right && actor.left < this.right && this.top < actor.bottom && actor.top < this.bottom);
   }
 }
 
@@ -88,8 +89,8 @@ class Level {
   }
 
   isFinished() {
-    // скобки можно убрать
-    return (this.status != null && this.finishDelay < 0)
+    // скобки можно убрать. OK
+    return this.status != null && this.finishDelay < 0;
   }
 
   actorAt(actor = {}) {
@@ -130,8 +131,8 @@ class Level {
 
   removeActor(actor) {
     const index = this.actors.findIndex(actor => actor);
-    // лучше всегда использовать === и !==
-    if (index != -1) {
+    // лучше всегда использовать === и !==. OK
+    if (index !== -1) {
       this.actors.splice(index, 1);
     }
   }
@@ -183,11 +184,9 @@ class LevelParser {
       return 'wall';
     } else if (symbol === '!') {
       return "lava";
-    } else {
-      // лишняя строчка
-      // функция и так вернёт undefined, если не указано иное
-      return undefined;
     }
+      // лишняя строчка
+      // функция и так вернёт undefined, если не указано иное. OK
   }
 
   createGrid(plan) {
@@ -196,8 +195,8 @@ class LevelParser {
 
   createActors(plan) {
     // если значение присваивается переменной 1 раз,
-    // то лучше использовать const
-    let actors = [];
+    // то лучше использовать const. OK
+    const actors = [];
     // если добавить в конструкторе значение по-умолчанию,
     // то эту проверку можно будет убрать
     if (this.gameObjects === undefined) {
@@ -206,12 +205,12 @@ class LevelParser {
     plan.forEach ((element, y) => {
       element.split('').forEach((el, x) => {
         // если значение присваивается переменной 1 раз,
-        // то лучше использовать const
-        let classActor = this.actorFromSymbol(el);
+        // то лучше использовать const. OK
+        const classActor = this.actorFromSymbol(el);
         if (typeof classActor === 'function') {
           // если значение присваивается переменной 1 раз,
-          // то лучше использовать const
-          let actor = new classActor(new Vector(x, y));
+          // то лучше использовать const. OK
+          const actor = new classActor(new Vector(x, y));
           if (actor instanceof Actor) {
             actors.push(actor);
           }
