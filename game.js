@@ -70,10 +70,8 @@ class Actor {
 class Level {
   constructor(arrGrid = [], arrActors = []) {
     this.grid = arrGrid;
-    // непонятно зачем этот код
-    this.actors = arrActors.filter(function(el) {
-      return ('type' in el);
-    });
+    // непонятно зачем этот код. OK
+    this.actors = arrActors;
     this.player = this.actors.find(actor => actor.type === 'player');
     this.height = this.grid.length;
     // можно написать короче, если использовать стелочную функцию
@@ -97,10 +95,8 @@ class Level {
     if (!(actor instanceof Actor)) {
       throw new Error('Можно сравнивать только объекты класса Actor');
     }
-    // со стрелочной функцией будет короче
-    return this.actors.find(function(el) {
-      return el.isIntersect(actor);
-    });
+    // со стрелочной функцией будет короче. OK
+    return this.actors.find(el => el.isIntersect(actor));
   }
 
   obstacleAt(pos, size) {
@@ -140,42 +136,35 @@ class Level {
   noMoreActors(title) {
     // тут лучше использовать метод массива,
     // который проверяет есть ли в нём элеметны
-    // удовлетворяющие условию
-    if (this.actors.find(el => el.type === title)) {
-      return false;
-    } else {
-      return true;
-    }
+    // удовлетворяющие условию. OK
+    return !this.actors.some(el => el.type === title);
   }
 
   playerTouched(title, actor = {}) {
     // тут можно написать if (this.status !== null) { return; }
-    // это уменьшит вложенность
-    if (this.status === null) {
-      if (title == 'lava' || title == 'fireball') {
-        this.status = 'lost';
-      } else if(title === 'coin' && actor.type === 'coin' && !this.noMoreActors(title)) {
-        this.removeActor(actor);
-        if (this.noMoreActors(title)) {
-          this.status = 'won';
-        }
+    // это уменьшит вложенность. OK
+    if (this.status !== null) { return; }
+
+    if (title == 'lava' || title == 'fireball') {
+      this.status = 'lost';
+    } else if(title === 'coin' && actor.type === 'coin' && !this.noMoreActors(title)) {
+      this.removeActor(actor);
+      if (this.noMoreActors(title)) {
+        this.status = 'won';
       }
     }
   }
 }
 
 class LevelParser {
-  // здесь можно задать значение по-умолчанию
-  constructor(gameObjects) {
+  // здесь можно задать значение по-умолчанию. OK
+  constructor(gameObjects = {}) {
     this.gameObjects = gameObjects;
   }
 
-  // лишнее значение по-умолчанию
-  actorFromSymbol(symbol = undefined) {
-    // лишняя проверка
-    if (symbol === undefined) {
-      return undefined;
-    }
+  // лишнее значение по-умолчанию. OK
+  actorFromSymbol(symbol) {
+    // лишняя проверка. OK
     return this.gameObjects[symbol];
   }
 
@@ -198,10 +187,7 @@ class LevelParser {
     // то лучше использовать const. OK
     const actors = [];
     // если добавить в конструкторе значение по-умолчанию,
-    // то эту проверку можно будет убрать
-    if (this.gameObjects === undefined) {
-      return actors;
-    }
+    // то эту проверку можно будет убрать. OK
     plan.forEach ((element, y) => {
       element.split('').forEach((el, x) => {
         // если значение присваивается переменной 1 раз,
@@ -240,9 +226,8 @@ class Fireball extends Actor {
 
   handleObstacle() {
     // мутация объекта Vector может привести к сложно находимым ошибкам
-    // тут лушче использовать метод класса Vector
-    this.speed.x = -this.speed.x;
-    this.speed.y = -this.speed.y;
+    // тут лушче использовать метод класса Vector. OK
+    this.speed = this.speed.times(-1);
   }
 
   act(time, level) {
