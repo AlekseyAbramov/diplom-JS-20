@@ -75,13 +75,14 @@ class Level {
     this.player = this.actors.find(actor => actor.type === 'player');
     this.height = this.grid.length;
     // можно написать короче, если использовать стелочную функцию
-    // и тренарный оператор сравнения
-    this.width = this.grid.reduce(function(memo, el) {
-      if (el.length > memo) {
-        memo = el.length;
-      }
-      return memo;
-    }, 0);
+    // и тренарный оператор сравнения. OK
+    this.width = this.grid.reduce((memo, el) => el.length > memo ? memo = el.length : memo, 0);
+    //this.width = this.grid.reduce(function(memo, el) {
+      //if (el.length > memo) {
+        //memo = el.length;
+      //}
+      //return memo;
+    //}, 0);
     this.status = null;
     this.finishDelay = 1;
   }
@@ -106,21 +107,24 @@ class Level {
 
     // здесь можно обойтись без создания объекта
     // ведь он используется только для того,
-    // чтобы сложить несколько чисел
-    let obstacleActor = new Actor(pos, size, undefined);
+    // чтобы сложить несколько чисел. OK
+    const top = pos.y, bottom = pos.y + size.y, left = pos.x, right = pos.x + size.x;
 
     // тут какая-то проблема с логикой (возможно поэтому игра не работает)
     // алгоритм должен быть следующий:
     // найти клетки на которых находится объект
-    // и проверить есть ли среди них клетки с препятствиями
-    if (obstacleActor.bottom > this.height) {
+    // и проверить есть ли среди них клетки с препятствиями. OK
+    if (bottom > this.height) {
       return 'lava';
-    } else if (Math.ceil(obstacleActor.top) < 0 || Math.ceil(obstacleActor.left) < 0 || Math.ceil(obstacleActor.right) > this.width) {
+    } else if (Math.ceil(top) < 0 || Math.ceil(left) < 0 || Math.ceil(right) > this.width) {
       return 'wall';
     } else {
-      let cross;
-      for (let i = Math.ceil(obstacleActor.top); i < Math.ceil(obstacleActor.bottom); i++) {
-        return cross = this.grid[i].find(el => el != undefined);
+      for (let i = Math.ceil(top); i < Math.ceil(bottom); i++) {
+        for (let j = Math.ceil(left); j < Math.ceil(right); j++) {
+          if (this.grid[i][j] !== undefined) {
+            return this.grid[i][j];
+          }
+        }
       }
     }
   }
