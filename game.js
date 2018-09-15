@@ -67,8 +67,7 @@ class Level {
     this.actors = arrActors;
     this.player = this.actors.find(actor => actor.type === 'player');
     this.height = this.grid.length;
-    // "memo =" не нужно
-    this.width = this.grid.reduce((memo, el) => el.length > memo ? memo = el.length : memo, 0);
+    this.width = this.grid.reduce((memo, el) => el.length > memo ? el.length : memo, 0);
     this.status = null;
     this.finishDelay = 1;
   }
