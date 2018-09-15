@@ -63,6 +63,7 @@ class Actor {
     // можно внести отрицание в скобки,
     // для этого нужно заменить операторы на противоположные (>= на <, <= на >)
     // и || на &&. OK
+    // скобки можно убрать :)
     return (this.left < actor.right && actor.left < this.right && this.top < actor.bottom && actor.top < this.bottom);
   }
 }
@@ -76,6 +77,7 @@ class Level {
     this.height = this.grid.length;
     // можно написать короче, если использовать стелочную функцию
     // и тренарный оператор сравнения. OK
+    // "memo =" не нужно
     this.width = this.grid.reduce((memo, el) => el.length > memo ? memo = el.length : memo, 0);
     //this.width = this.grid.reduce(function(memo, el) {
       //if (el.length > memo) {
@@ -108,6 +110,7 @@ class Level {
     // здесь можно обойтись без создания объекта
     // ведь он используется только для того,
     // чтобы сложить несколько чисел. OK
+    // не объявляйте переменные через запятую, потом будет сложно править код
     const top = pos.y, bottom = pos.y + size.y, left = pos.x, right = pos.x + size.x;
 
     // тут какая-то проблема с логикой (возможно поэтому игра не работает)
@@ -116,11 +119,17 @@ class Level {
     // и проверить есть ли среди них клетки с препятствиями. OK
     if (bottom > this.height) {
       return 'lava';
+    // else не нужен
+    // округлить всё лучше один раз
+    // округления у вас, кстати, неправильные :(
     } else if (Math.ceil(top) < 0 || Math.ceil(left) < 0 || Math.ceil(right) > this.width) {
       return 'wall';
+    // else не нужен
     } else {
       for (let i = Math.ceil(top); i < Math.ceil(bottom); i++) {
         for (let j = Math.ceil(left); j < Math.ceil(right); j++) {
+          // this.grid[i][j] лучше сохранить в переменную, чтобы не писать 2 раза
+          // !== undefined по-моему можно тут убрат
           if (this.grid[i][j] !== undefined) {
             return this.grid[i][j];
           }
@@ -130,6 +139,7 @@ class Level {
   }
 
   removeActor(actor) {
+    // для поиска индекса объекта есть более простой метод массива
     const index = this.actors.findIndex(actor => actor);
     // лучше всегда использовать === и !==. OK
     if (index !== -1) {
@@ -147,10 +157,13 @@ class Level {
   playerTouched(title, actor = {}) {
     // тут можно написать if (this.status !== null) { return; }
     // это уменьшит вложенность. OK
+    // не пишите фигурные скобки на одной строчке
     if (this.status !== null) { return; }
 
+    // ===
     if (title == 'lava' || title == 'fireball') {
       this.status = 'lost';
+      // третью часть проверки можно убрать
     } else if(title === 'coin' && actor.type === 'coin' && !this.noMoreActors(title)) {
       this.removeActor(actor);
       if (this.noMoreActors(title)) {
@@ -175,6 +188,7 @@ class LevelParser {
   obstacleFromSymbol(symbol) {
     if (symbol === 'x') {
       return 'wall';
+    // else можно убрать
     } else if (symbol === '!') {
       return "lava";
     }
@@ -216,7 +230,9 @@ class LevelParser {
 }
 
 class Fireball extends Actor {
+  // неправильные значения по-умолчаннию
   constructor(pos = undefined, speed = undefined) {
+    // второй аргумент неправильный - размер огненного шара нам известен
     super(pos, undefined, speed);
   }
 
@@ -244,18 +260,21 @@ class Fireball extends Actor {
 }
 
 class HorizontalFireball extends Fireball {
+  // неправильные значения по-умолчаннию
   constructor(pos = undefined) {
     super(pos, new Vector(2, 0));
   }
 }
 
 class VerticalFireball extends Fireball {
+  // неправильные значения по-умолчаннию
   constructor(pos = undefined) {
     super(pos, new Vector(0, 2));
   }
 }
 
 class FireRain extends Fireball {
+  // неправильные значения по-умолчаннию
   constructor(pos = undefined) {
     super(pos, new Vector(0, 3));
     this.startPos = pos;
@@ -267,6 +286,7 @@ class FireRain extends Fireball {
 }
 
 class Coin extends Actor {
+  // вот тут правильное
   constructor(pos = new Vector(0, 0)) {
     super(pos.plus(new Vector(0.2, 0.1)), new Vector(0.6, 0.6));
     this.springSpeed = 8;
