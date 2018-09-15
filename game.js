@@ -56,41 +56,24 @@ class Actor {
     }
     if(this === actor) {
       return false;
-    // else можно убрать, т.к. в if return
-    // и проверки, которые бросают исключения лучше делать в начале. OK
     }
-    //return ( !(this.left >= actor.left + actor.size.x || actor.left >= this.left + this.size.x || this.top >= actor.top + actor.size.y || actor.top >= this.top + this.size.y) );
-    // можно внести отрицание в скобки,
-    // для этого нужно заменить операторы на противоположные (>= на <, <= на >)
-    // и || на &&. OK
-    // скобки можно убрать :)
-    return (this.left < actor.right && actor.left < this.right && this.top < actor.bottom && actor.top < this.bottom);
+    return this.left < actor.right && actor.left < this.right && this.top < actor.bottom && actor.top < this.bottom;
   }
 }
 
 class Level {
   constructor(arrGrid = [], arrActors = []) {
     this.grid = arrGrid;
-    // непонятно зачем этот код. OK
     this.actors = arrActors;
     this.player = this.actors.find(actor => actor.type === 'player');
     this.height = this.grid.length;
-    // можно написать короче, если использовать стелочную функцию
-    // и тренарный оператор сравнения. OK
     // "memo =" не нужно
     this.width = this.grid.reduce((memo, el) => el.length > memo ? memo = el.length : memo, 0);
-    //this.width = this.grid.reduce(function(memo, el) {
-      //if (el.length > memo) {
-        //memo = el.length;
-      //}
-      //return memo;
-    //}, 0);
     this.status = null;
     this.finishDelay = 1;
   }
 
   isFinished() {
-    // скобки можно убрать. OK
     return this.status != null && this.finishDelay < 0;
   }
 
@@ -98,7 +81,6 @@ class Level {
     if (!(actor instanceof Actor)) {
       throw new Error('Можно сравнивать только объекты класса Actor');
     }
-    // со стрелочной функцией будет короче. OK
     return this.actors.find(el => el.isIntersect(actor));
   }
 
@@ -107,64 +89,46 @@ class Level {
       throw new Error('В метод obstacleAt можно передавать только вектора типа Vector');
     }
 
-    // здесь можно обойтись без создания объекта
-    // ведь он используется только для того,
-    // чтобы сложить несколько чисел. OK
-    // не объявляйте переменные через запятую, потом будет сложно править код
-    const top = pos.y, bottom = pos.y + size.y, left = pos.x, right = pos.x + size.x;
+    const top = Math.floor(pos.y);
+    const bottom = Math.ceil(pos.y + size.y);
+    const left = Math.floor(pos.x);
+    const right = Math.ceil(pos.x + size.x);
 
-    // тут какая-то проблема с логикой (возможно поэтому игра не работает)
-    // алгоритм должен быть следующий:
-    // найти клетки на которых находится объект
-    // и проверить есть ли среди них клетки с препятствиями. OK
     if (bottom > this.height) {
       return 'lava';
-    // else не нужен
-    // округлить всё лучше один раз
-    // округления у вас, кстати, неправильные :(
-    } else if (Math.ceil(top) < 0 || Math.ceil(left) < 0 || Math.ceil(right) > this.width) {
+    }
+    if (top < 0 || left < 0 || right > this.width) {
       return 'wall';
-    // else не нужен
-    } else {
-      for (let i = Math.ceil(top); i < Math.ceil(bottom); i++) {
-        for (let j = Math.ceil(left); j < Math.ceil(right); j++) {
-          // this.grid[i][j] лучше сохранить в переменную, чтобы не писать 2 раза
-          // !== undefined по-моему можно тут убрат
-          if (this.grid[i][j] !== undefined) {
-            return this.grid[i][j];
-          }
+    }
+    for (let i = top; i < bottom; i++) {
+      for (let j = left; j < right; j++) {
+          const cell = this.grid[i][j];
+        if (cell) {
+          return cell;
         }
       }
     }
   }
 
   removeActor(actor) {
-    // для поиска индекса объекта есть более простой метод массива
-    const index = this.actors.findIndex(actor => actor);
-    // лучше всегда использовать === и !==. OK
+    const index = this.actors.indexOf(actor);
     if (index !== -1) {
       this.actors.splice(index, 1);
     }
   }
 
   noMoreActors(title) {
-    // тут лучше использовать метод массива,
-    // который проверяет есть ли в нём элеметны
-    // удовлетворяющие условию. OK
     return !this.actors.some(el => el.type === title);
   }
 
   playerTouched(title, actor = {}) {
-    // тут можно написать if (this.status !== null) { return; }
-    // это уменьшит вложенность. OK
-    // не пишите фигурные скобки на одной строчке
-    if (this.status !== null) { return; }
+    if (this.status !== null) {
+      return;
+    }
 
-    // ===
-    if (title == 'lava' || title == 'fireball') {
+    if (title === 'lava' || title === 'fireball') {
       this.status = 'lost';
-      // третью часть проверки можно убрать
-    } else if(title === 'coin' && actor.type === 'coin' && !this.noMoreActors(title)) {
+    } else if(title === 'coin' && actor.type === 'coin') {
       this.removeActor(actor);
       if (this.noMoreActors(title)) {
         this.status = 'won';
@@ -174,26 +138,22 @@ class Level {
 }
 
 class LevelParser {
-  // здесь можно задать значение по-умолчанию. OK
   constructor(gameObjects = {}) {
     this.gameObjects = gameObjects;
   }
 
-  // лишнее значение по-умолчанию. OK
   actorFromSymbol(symbol) {
-    // лишняя проверка. OK
     return this.gameObjects[symbol];
   }
 
   obstacleFromSymbol(symbol) {
     if (symbol === 'x') {
       return 'wall';
-    // else можно убрать
-    } else if (symbol === '!') {
+    }
+
+    if (symbol === '!') {
       return "lava";
     }
-      // лишняя строчка
-      // функция и так вернёт undefined, если не указано иное. OK
   }
 
   createGrid(plan) {
@@ -201,19 +161,11 @@ class LevelParser {
   }
 
   createActors(plan) {
-    // если значение присваивается переменной 1 раз,
-    // то лучше использовать const. OK
     const actors = [];
-    // если добавить в конструкторе значение по-умолчанию,
-    // то эту проверку можно будет убрать. OK
     plan.forEach ((element, y) => {
       element.split('').forEach((el, x) => {
-        // если значение присваивается переменной 1 раз,
-        // то лучше использовать const. OK
         const classActor = this.actorFromSymbol(el);
         if (typeof classActor === 'function') {
-          // если значение присваивается переменной 1 раз,
-          // то лучше использовать const. OK
           const actor = new classActor(new Vector(x, y));
           if (actor instanceof Actor) {
             actors.push(actor);
@@ -230,10 +182,8 @@ class LevelParser {
 }
 
 class Fireball extends Actor {
-  // неправильные значения по-умолчаннию
-  constructor(pos = undefined, speed = undefined) {
-    // второй аргумент неправильный - размер огненного шара нам известен
-    super(pos, undefined, speed);
+  constructor(pos = new Vector(0, 0), speed = new Vector(0, 0)) {
+    super(pos, new Vector(1, 1), speed);
   }
 
   get type() {
@@ -245,8 +195,6 @@ class Fireball extends Actor {
   }
 
   handleObstacle() {
-    // мутация объекта Vector может привести к сложно находимым ошибкам
-    // тут лушче использовать метод класса Vector. OK
     this.speed = this.speed.times(-1);
   }
 
@@ -260,22 +208,19 @@ class Fireball extends Actor {
 }
 
 class HorizontalFireball extends Fireball {
-  // неправильные значения по-умолчаннию
-  constructor(pos = undefined) {
+  constructor(pos = new Vector(0, 0)) {
     super(pos, new Vector(2, 0));
   }
 }
 
 class VerticalFireball extends Fireball {
-  // неправильные значения по-умолчаннию
-  constructor(pos = undefined) {
+  constructor(pos = new Vector(0, 0)) {
     super(pos, new Vector(0, 2));
   }
 }
 
 class FireRain extends Fireball {
-  // неправильные значения по-умолчаннию
-  constructor(pos = undefined) {
+  constructor(pos = new Vector(0, 0)) {
     super(pos, new Vector(0, 3));
     this.startPos = pos;
   }
@@ -286,7 +231,6 @@ class FireRain extends Fireball {
 }
 
 class Coin extends Actor {
-  // вот тут правильное
   constructor(pos = new Vector(0, 0)) {
     super(pos.plus(new Vector(0.2, 0.1)), new Vector(0.6, 0.6));
     this.springSpeed = 8;
